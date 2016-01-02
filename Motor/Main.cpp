@@ -13,7 +13,6 @@ sf::Sprite spr;
 void CreareLista();
 sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
 sf::RenderWindow interfata(sf::VideoMode(halfScreenWidth, halfScreenHeight), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
-void Selectare(sf::RenderWindow *interfata);
 
 int main()
 {
@@ -22,8 +21,9 @@ int main()
 	sf::Texture texture;
 	//window.pushGLStates();
 	//window.popGLStates();
-	spr.setTexture(texture);
-	
+	interfata.pushGLStates();
+	CreareLista();
+	interfata.popGLStates();
 	bool running = true;
 
 	glViewport(0.0f, 0.0f,SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -93,23 +93,26 @@ int main()
 		window.display();
 
 		//window2(interfata)
+		interfata.setActive();
 		sf::Event iEvent;
-		CreareLista();
 		while (interfata.pollEvent(iEvent))
 		{
+			
+			
 
-			if (Event.type == sf::Event::KeyPressed)
-				switch (Event.key.code)
+			if (iEvent.type == sf::Event::KeyPressed)
+				switch (iEvent.key.code)
 				{
 				case sf::Keyboard::Right:
-					aux = aux->next;
+					interfata.pushGLStates();
+					aux = aux->next; cout << "Changed" << endl;
 					spr.setTexture(aux->texture);
+					interfata.popGLStates();
 					break;
 				}
 		}
-		interfata.setActive();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		CreareLista();
+		
 		interfata.display();
 		
 	}
@@ -125,8 +128,7 @@ void CreareLista()
 	ifstream fin("Textures.txt");
 	string str;
 	fin >> str;
-	interfata.pushGLStates();
-	interfata.popGLStates();
+	
 	a.texture.loadFromFile(str);
 	fin >> str;
 	b.texture.loadFromFile(str);
