@@ -8,7 +8,7 @@ struct inter_tex
 	inter_tex *pre;
 	inter_tex *next;
 };
-inter_tex a, b, c, aux;
+inter_tex a, b, c, *aux;
 sf::Sprite spr;
 void CreareLista();
 sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
@@ -95,20 +95,21 @@ int main()
 		//window2(interfata)
 		sf::Event iEvent;
 		CreareLista();
-		while (interfata.pollEvent(Event))
+		while (interfata.pollEvent(iEvent))
 		{
 
 			if (Event.type == sf::Event::KeyPressed)
 				switch (Event.key.code)
 				{
 				case sf::Keyboard::Right:
-
+					aux = aux->next;
+					spr.setTexture(aux->texture);
 					break;
 				}
 		}
 		interfata.setActive();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Selectare(&interfata);
+		CreareLista();
 		interfata.display();
 		
 	}
@@ -134,5 +135,5 @@ void CreareLista()
 	a.next = &b;
 	b.next = &c;
 	c.next = &a;
-	aux = a;
+	aux = &a;
 }
