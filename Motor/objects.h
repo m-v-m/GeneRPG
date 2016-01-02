@@ -1,15 +1,16 @@
-#ifndef OBJECTS
-#define OBJECTS
+#ifndef gard
+#define gard
+#endif
 
-class obiect {
+class thing {
 public:
 	int x, y;
 	sf::Texture texture;
 	sf::Sprite sprite;
-	obiect(sf::Texture, int, int);
+	thing(sf::Texture, int, int);
 };
 
-obiect::obiect(sf::Texture tex, int x, int y) {
+thing::thing(sf::Texture tex, int x, int y) {
 	texture = tex;
 	this->x = x;
 	this->y = y;
