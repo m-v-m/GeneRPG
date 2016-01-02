@@ -32,7 +32,5 @@ void Grid::Create(sf::Vector2i globalPosition)
 			glDrawArrays(GL_LINE_LOOP, 0, 4);
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_COLOR_ARRAY);
-			
-
 		}
 }
