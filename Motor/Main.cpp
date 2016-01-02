@@ -19,11 +19,11 @@ int main()
 	window.setVerticalSyncEnabled(true);
 	Grid grid;
 	sf::Texture texture;
-	//window.pushGLStates();
-	//window.popGLStates();
-	interfata.pushGLStates();
+	window.pushGLStates();
+
 	CreareLista();
-	interfata.popGLStates();
+
+	window.popGLStates();
 	bool running = true;
 
 	glViewport(0.0f, 0.0f,SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -97,17 +97,15 @@ int main()
 		sf::Event iEvent;
 		while (interfata.pollEvent(iEvent))
 		{
-			
-			
-
 			if (iEvent.type == sf::Event::KeyPressed)
 				switch (iEvent.key.code)
 				{
 				case sf::Keyboard::Right:
-					interfata.pushGLStates();
+					
 					aux = aux->next; cout << "Changed" << endl;
+					window.pushGLStates();
 					spr.setTexture(aux->texture);
-					interfata.popGLStates();
+					window.popGLStates();
 					break;
 				}
 		}
@@ -128,7 +126,6 @@ void CreareLista()
 	ifstream fin("Textures.txt");
 	string str;
 	fin >> str;
-	
 	a.texture.loadFromFile(str);
 	fin >> str;
 	b.texture.loadFromFile(str);
