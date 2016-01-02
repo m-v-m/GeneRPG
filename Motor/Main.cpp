@@ -1,15 +1,27 @@
 #include "Main_Header.h"
+#include "Grid.h"
+GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
+GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
+struct inter_tex
+{
+	sf::Texture texture;
+	inter_tex *pre;
+	inter_tex *next;
+};
+inter_tex a, b, c, aux;
+sf::Sprite spr;
+void CreareLista();
+sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
+sf::RenderWindow interfata(sf::VideoMode(halfScreenWidth, halfScreenHeight), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
+void Selectare(sf::RenderWindow *interfata);
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
 	window.setVerticalSyncEnabled(true);
 	Grid grid;
 	sf::Texture texture;
-	window.pushGLStates();
-	texture.loadFromFile("background.png");
-	window.popGLStates();
-	sf::Sprite spr;
+	//window.pushGLStates();
+	//window.popGLStates();
 	spr.setTexture(texture);
 	
 	bool running = true;
@@ -21,8 +33,6 @@ int main()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
-	GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
 	sf::RectangleShape rectangle(sf::Vector2f(Grid_size, Grid_size));
 	while (running)
 	{
@@ -31,6 +41,7 @@ int main()
 		sf::Event Event;
 		while (window.pollEvent(Event))
 		{
+			window.setActive();
 			if (Event.type == sf::Event::Closed)
 			{
 				// end the program
@@ -80,9 +91,48 @@ int main()
 		
 		window.popGLStates(); //SFML
 		window.display();
+
+		//window2(interfata)
+		sf::Event iEvent;
+		CreareLista();
+		while (interfata.pollEvent(Event))
+		{
+
+			if (Event.type == sf::Event::KeyPressed)
+				switch (Event.key.code)
+				{
+				case sf::Keyboard::Right:
+
+					break;
+				}
+		}
+		interfata.setActive();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Selectare(&interfata);
+		interfata.display();
+		
 	}
 
 	// release resources...
 
 	return 0;
+}
+
+void CreareLista()
+{
+
+	ifstream fin("Textures.txt");
+	string str;
+	fin >> str;
+	interfata.pushGLStates();
+	interfata.popGLStates();
+	a.texture.loadFromFile(str);
+	fin >> str;
+	b.texture.loadFromFile(str);
+	fin >> str;
+	c.texture.loadFromFile(str);
+	a.next = &b;
+	b.next = &c;
+	c.next = &a;
+	aux = a;
 }

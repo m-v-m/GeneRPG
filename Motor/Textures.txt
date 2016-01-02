@@ -1,0 +1,3 @@
+Background.png
+player.png
+Diliu.png
