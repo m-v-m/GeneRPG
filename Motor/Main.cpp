@@ -2,7 +2,7 @@
 
 int main()
 {
-	sf::Window window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
+	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
 	window.setVerticalSyncEnabled(true);
 	Grid grid;
 
@@ -17,10 +17,11 @@ int main()
 
 	GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
 	GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
-
+	sf::RectangleShape rectangle(sf::Vector2f(Grid_size, Grid_size));
 	while (running)
 	{
 		// handle events
+		sf::Vector2i globalPosition = sf::Mouse::getPosition(window);
 		sf::Event Event;
 		while (window.pollEvent(Event))
 		{
@@ -45,29 +46,23 @@ int main()
 				case sf::Keyboard::Left:
 					break;
 				}
+			if (Event.type == sf::Event::MouseButtonPressed)
+			{
+				rectangle.setPosition(sf::Vector2f(globalPosition.x-Grid_size/2,globalPosition.y - Grid_size / 2));
+			}
+			
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear buffer
-		//glPushMatrix();
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//glPushMatrix();
-		/*
-		GLfloat vertices[] =
-		{
-			200, 100,
-			100, 300,
-			500, 50,
-			320, 100, 
-			10, 10,
-		};
-				
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glVertexPointer(2, GL_FLOAT, 0, vertices);
-				glDrawArrays(GL_LINE_LOOP, 0, 5);
-				glDisableClientState(GL_VERTEX_ARRAY);
-				//glPopMatrix();*/
-		//glPopMatrix();
-		grid.Create();
+		grid.Create(globalPosition);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		window.pushGLStates(); //SFML
+
+		window.draw(rectangle);
+
+		window.popGLStates(); //SFML
+		
 		window.display();
 	}
 

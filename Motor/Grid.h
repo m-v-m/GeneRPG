@@ -3,6 +3,5 @@
 class Grid
 {
 public:
-	void Create();
-
+	void Create(sf::Vector2i globalPosition);
 };
