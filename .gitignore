@@ -16,3 +16,7 @@ GeneRPG.rc
 *.sdf
 Release/GeneRPG.iobj
 *.ipdb
+Debug/GeneRPG.ilk
+*.opendb
+Debug/GeneRPG.exe
+*.exe
