@@ -1,5 +1,4 @@
 #include "Main_Header.h"
-#include "Grid.h"
 GLfloat halfScreenWidth = SCREEN_WIDTH / 2;
 GLfloat halfScreenHeight = SCREEN_HEIGHT / 2;
 struct inter_tex
@@ -7,15 +6,24 @@ struct inter_tex
 	sf::Texture texture;
 	inter_tex *pre;
 	inter_tex *next;
+	string name;
 };
 inter_tex a, b, c, *aux;
 sf::Sprite spr;
+sf::RenderWindow window;
 void CreareLista();
-sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
-sf::RenderWindow interfata(sf::VideoMode(halfScreenWidth, halfScreenHeight), "GeneRPG", sf::Style::Default, sf::ContextSettings(32));
-
+void CreateArt();
+void CreateLevel();
 int main()
 {
+	bool update = 1;
+	sf::ContextSettings settings;
+	settings.depthBits = 24;
+	settings.stencilBits = 8;
+	settings.antialiasingLevel = 4;
+	settings.majorVersion = 3;
+	settings.minorVersion = 0;
+	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "GeneRPG", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 	Grid grid;
 	sf::Texture texture;
@@ -24,6 +32,7 @@ int main()
 	CreareLista();
 
 	window.popGLStates();
+
 	bool running = true;
 
 	glViewport(0.0f, 0.0f,SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -36,7 +45,6 @@ int main()
 	sf::RectangleShape rectangle(sf::Vector2f(Grid_size, Grid_size));
 	while (running)
 	{
-		// handle events
 		sf::Vector2i globalPosition = sf::Mouse::getPosition(window);
 		sf::Event Event;
 		while (window.pollEvent(Event))
@@ -66,52 +74,76 @@ int main()
 			if (Event.type == sf::Event::MouseButtonPressed)
 			{
 				int i, j;
+				int gasit=0;
+				update = 1;
 				for (i = 1; i < SCREEN_WIDTH + Grid_size; i = i + Grid_size)
 					for (j = 1; j < SCREEN_HEIGHT + Grid_size; j = j + Grid_size)
 					{
+						ofstream fout("level1.txt", std::ios_base::app | std::ios_base::out);
 						if (((globalPosition.x > i - Grid_size && globalPosition.x< i + Grid_size) && (globalPosition.y> j - Grid_size && globalPosition.y < j + Grid_size)))
 						{
-							cout << i << " " << j << endl;
-							spr.setPosition(sf::Vector2f(i - Grid_size, j-2.5));
+							if (gasit != 1)
+							{
+								
+								gasit++;
+							}
+							else
+							{
+								fout << i - Grid_size << " " << j << " " << aux->name << endl;
+								fout.close();
+							}
 							break;
 						}
-						cout << endl;
+						
 					}
-				
 			}
 			
-		}
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear buffer
-		
-		grid.Create(globalPosition);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		window.pushGLStates(); //SFML
-
-		window.draw(spr);
-		
-		window.popGLStates(); //SFML
-		window.display();
-
-		//window2(interfata)
-		interfata.setActive();
-		sf::Event iEvent;
-		while (interfata.pollEvent(iEvent))
-		{
-			if (iEvent.type == sf::Event::KeyPressed)
-				switch (iEvent.key.code)
+			if (Event.type == sf::Event::KeyPressed)
+				switch (Event.key.code)
 				{
 				case sf::Keyboard::Right:
-					
-					aux = aux->next; cout << "Changed" << endl;
-					window.pushGLStates();
+
+					aux = aux->next;
 					spr.setTexture(aux->texture);
-					window.popGLStates();
-					break;
 				}
+				
+			
 		}
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		interfata.display();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear buffer
+		grid.Create(globalPosition);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//window.pushGLStates();
+		
+		//window.draw(spr);
+		//window.popGLStates();
+		//window.popGLStates();
+		
+		ifstream fin("level1.txt");
+		sf::Sprite sprit;
+		while (!fin.eof())
+		{
+			string str;
+
+			float x;
+			float y;
+			sf::Texture texture;
+
+			fin >> x >> y >> str;
+			if(str!="")
+			{ 
+			texture.loadFromFile(str);
+			sprit.setPosition(sf::Vector2f(x, y));
+			sprit.setTexture(texture);
+			cout << x << " " << y << " " << str << endl;
+			window.pushGLStates();
+			window.draw(sprit);
+			window.popGLStates();
+			}
+		}
+		fin.close();
+		//window.popGLStates();
+		window.display();
 		
 	}
 
@@ -122,17 +154,20 @@ int main()
 
 void CreareLista()
 {
-
 	ifstream fin("Textures.txt");
 	string str;
-	fin >> str;
+	fin >> str; cout << str << endl;
 	a.texture.loadFromFile(str);
-	fin >> str;
+	a.name = str;
+	fin >> str; cout << str << endl;
 	b.texture.loadFromFile(str);
-	fin >> str;
+	b.name = str;
+	fin >> str; cout << str << endl;
 	c.texture.loadFromFile(str);
+	c.name = str;
 	a.next = &b;
 	b.next = &c;
 	c.next = &a;
 	aux = &a;
+	fin.close();
 }
